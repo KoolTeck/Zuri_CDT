@@ -20,11 +20,10 @@ class checkObstruction:
     def __init__(self, point_a= [0, 0], point_b= [0, 0]):
         self.point_a = point_a
         self.point_b = point_b
-        # getting the time duration from A - B from the imported module
-        timeFromAtoB = TimeDuration(self.point_a, self.point_b)
-        # calculating the distance btw. the points
-        # distance btw. two points is given by sqrt((x1 - x2 + y1 - y2)) where x and y are the horizontal and vertical cordinates of the points
-
+        
+    #get the time duration from A - B from the imported module
+    timeFromAtoB = TimeDuration(checkObstruction.point_a, checkObstruction.poin_b) #mins.
+    
     @property
     def point_a(self):
         """ returns the point_a co-ordinates """
@@ -42,6 +41,43 @@ class checkObstruction:
     
     @point_b.setter
     def point_b(self, value):
-        """ sets a new value for point_a location """
+        """ sets a new value for point_b location """
         self.__point_b = value
+
+    def get_distance(self):
+        """
+           calculates the distance btw. the points
+        
+        distance btw. two points is given by sqrt((x1 - x2) + (y1 - y2)) where x and y are the horizontal and vertical cordinates of the points
+        """
+        x1 = self.point_a[0]
+        x2 = self.point_b[0]
+        y1 = self.point_a[1]
+        y2 = self.point_a[2]
+        distance = sqrt((x1 - x2) + (y1 - y2)) #miles
+        return distance
+    
+    def get_speed(self):
+        # calc. the speed of the machine
+        speed = get_distance() / timeFromAtoB #miles/mins.
+        return speed
+    
+    #calculating the expected time from A - B
+    expectedTime = get_speed() * get_distance() #mins.
+    if (timeFromAtoB - expectedTime) >= 60:
+        print("route has obstruction and impenetrable.")
+        return true
+    else:
+        print("route has no obstruction.")
+        return false
+
+# using the class
+if __name__ = "__main__":
+    check_route = check_obstruction([53.5872,-2.4138], [53.323,-2.2122])
+    print(check_route)
+    # using the setters and getters method
+    check_route.point_a = [603.22, -300.55]
+    check_route.point_a = [425.24, -422.55]
+    print(check_route)
+    
 
