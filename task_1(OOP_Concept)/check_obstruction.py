@@ -18,7 +18,7 @@ class checkObstruction:
 
         Returns: true or false
     """
-    def __init__(self, point_a= [0, 0], point_b= [0, 0], speed = 0):
+    def __init__(self, point_a = [0, 0], point_b = [0, 0], speed = 0):
         self.point_a = point_a
         self.point_b = point_b
         self.speed = speed
@@ -84,7 +84,7 @@ if __name__ = "__main__":
     print(check_route)
     # using the setters and getters method
     check_route.point_a = [603.22, -300.55]
-    check_route.point_a = [425.24, -422.55]
+    check_route.point_b = [425.24, -422.55]
     check_route.speed = 15.5
     print(check_route)
     
