@@ -14,12 +14,14 @@ class checkObstruction:
         Params: 
             point_a(array): the first point co-ordinates
             point_b(array): the second point co-ordinates
+            speed(int): the speed of the machine in miles/secs
 
         Returns: true or false
     """
-    def __init__(self, point_a= [0, 0], point_b= [0, 0]):
+    def __init__(self, point_a= [0, 0], point_b= [0, 0], speed = 0):
         self.point_a = point_a
         self.point_b = point_b
+        self.speed = speed
         
     #get the time duration from A - B from the imported module
     timeFromAtoB = TimeDuration(checkObstruction.point_a, checkObstruction.poin_b) #mins.
@@ -56,14 +58,19 @@ class checkObstruction:
         y2 = self.point_a[2]
         distance = sqrt((x1 - x2) + (y1 - y2)) #miles
         return distance
-    
-    def get_speed(self):
-        # calc. the speed of the machine
-        speed = get_distance() / timeFromAtoB #miles/mins.
-        return speed
+
+    @property
+    def speed(self):
+        # returns the speed of the machine
+        return self.speed
+
+    @speed.setter
+    def speed(self, value):
+        """ sets the speed """
+        self.__speed = value
     
     #calculating the expected time from A - B
-    expectedTime = get_speed() * get_distance() #mins.
+    expectedTime = speed() * get_distance() #mins.
     if (timeFromAtoB - expectedTime) >= 60:
         print("route has obstruction and impenetrable.")
         return true
@@ -73,11 +80,12 @@ class checkObstruction:
 
 # using the class
 if __name__ = "__main__":
-    check_route = check_obstruction([53.5872,-2.4138], [53.323,-2.2122])
+    check_route = check_obstruction([53.5872,-2.4138], [53.323,-2.2122], 12.1)
     print(check_route)
     # using the setters and getters method
     check_route.point_a = [603.22, -300.55]
     check_route.point_a = [425.24, -422.55]
+    check_route.speed = 15.5
     print(check_route)
     
 
