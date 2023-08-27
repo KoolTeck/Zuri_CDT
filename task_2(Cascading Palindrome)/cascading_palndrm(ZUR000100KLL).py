@@ -100,7 +100,8 @@ if __name__ == "__main__":
     print(palindrome.palindrome_str)
     print(palindrome.checkPalindrom_method_two())
     print()
-    palindrome.palindrome_str = "WasitacaroracatIsaw tentative abcd2dcba abcd2acba abcc2dcba Detartrated Murdrum Rotavator Sis Adda saippuakivikauppias 22 99 101 101101 88 234234 234432 1006001 1008001 1010101"
+    palindrome.palindrome_str = """\
+                WasitacaroracatIsaw tentative abcd2dcba abcd2acba abcc2dcba Detartrated Murdrum Rotavator Sis Adda saippuakivikauppias 22 99 101 101101 88 234234 234432 1006001 1008001 1010101"""
     print(palindrome.palindrome_str)
     print(palindrome.checkPalindrom_method_two())
     print()
