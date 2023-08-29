@@ -13,3 +13,16 @@ A palindrome is a word, sentence, verse or number that reads the same backwards 
 a. 1230321 returns 1230321
 b. 1230321 09234 0124210 returns 1230321 0124210
 c. abcd5dcba 1230321 09234 0124210 returns abcd5dcba 1230321 0124210
+
+# Note:
+
+      kindly check the file check_exec_time.py for the analysis of the time execution of the methods in th class
+
+# Sample Usage
+
+```
+    palindrome = CascadingPalindrome("abcd5dcba 1230321 092343 0124220 1330321 0923290")
+    print(palindrome.palindrome_str)
+    print(palindrome.checkPalindrom_method_one())
+    print()
+```
