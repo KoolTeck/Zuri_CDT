@@ -5,6 +5,7 @@
 
     The module contains a single class called CascadingPalindrom
     SID: ZUR000100KLL
+    Note: Kindly check the check_exec_time.py file for time analysis of the two method in the class
 """
 
 
@@ -17,7 +18,7 @@ class CascadingPalindrome:
     Returns: the palindrome component(s) if found.
     """
 
-    def __init__(self, palindrome_str=str):
+    def __init__(self, palindrome_str="101"):
         self.palindrome_str = palindrome_str
 
     @property
@@ -144,7 +145,7 @@ if __name__ == "__main__":
     # # Error checks
     # palindrome.palindrome_str = "H" //ValueError: components must be above 1 char
     # palindrome.palindrome_str = ("aa",) TypeError: Parameter must be a string and dilimited by space
-    print()
+    # print()
     print("Using method two...........")
     palindrome = CascadingPalindrome("abcd5dcba 1230321 0923443 0124210 3442552")
     print(palindrome.palindrome_str)
