@@ -6,6 +6,7 @@
     The module contains a single class called CascadingPalindrom
     SID: ZUR000100KLL
     Note: Kindly check the check_exec_time.py file for time analysis of the two method in the class
+          Javascript implementation in the other_implementation folder
 """
 
 
