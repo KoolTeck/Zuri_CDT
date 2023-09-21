@@ -170,7 +170,7 @@ app.post("/set_username", auth, async (req, res) => {
 /**
  * deletes a user from the db
  */
-app.post("/delete_user", auth, async (req, res) => {
+app.delete("/delete_user", auth, async (req, res) => {
   const email = req.user.email;
   try {
     const user = await User.deleteOne({ email: email });
