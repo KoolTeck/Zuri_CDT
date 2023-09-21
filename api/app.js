@@ -18,10 +18,10 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 // importing the user schema
-const User = require("./models/user");
+const User = require("../models/user");
 
 // middleware for token authentication
-const auth = require("./middleware/auth");
+const auth = require("../middleware/auth");
 
 /**
  * @api {get} / Entry point
