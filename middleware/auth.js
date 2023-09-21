@@ -13,7 +13,7 @@ const verifyToken = (req, res, next) => {
       req.user = decodedToken;
       return next();
     } catch (error) {
-      res.status(401).send("Invalid token supplied");
+      res.status(401).send("Invalid token supplied, login to get a new token");
     }
   }
 };
