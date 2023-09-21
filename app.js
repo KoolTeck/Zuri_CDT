@@ -85,29 +85,30 @@ app.post("/login", async (req, res) => {
       res.status(400).send("invalid email");
     } else if (typeof password != "string") {
       res.status(400).send("password must be a string");
-    }
-    //   check if user exists
-    const user = await User.findOne({ email: email.toLowerCase() });
-    // check password
-
-    if (user && (await bcrypt.compare(password, user.password))) {
-      // assign new token
-      const token = jwt.sign(
-        {
-          user_id: user.id,
-          email,
-        },
-        process.env.JWT_SECRET,
-        {
-          expiresIn: "2hr",
-        }
-      );
-      //   save user
-      user.token = token;
-
-      res.status(200).json(user);
     } else {
-      res.status(400).send("email or password incorrect");
+      //   check if user exists
+      const user = await User.findOne({ email: email.toLowerCase() });
+      // check password
+
+      if (user && (await bcrypt.compare(password, user.password))) {
+        // assign new token
+        const token = jwt.sign(
+          {
+            user_id: user.id,
+            email,
+          },
+          process.env.JWT_SECRET,
+          {
+            expiresIn: "2hr",
+          }
+        );
+        //   save user
+        user.token = token;
+
+        res.status(200).json(user);
+      } else {
+        res.status(400).send("email or password incorrect");
+      }
     }
   } catch (error) {
     console.log(error);
