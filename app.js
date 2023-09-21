@@ -36,8 +36,13 @@ app.post("/signup", async (req, res) => {
       res.status(400).send("username must be between seven and above chars");
     } else if (!email.includes("@")) {
       res.status(400).send("invalid email");
-    } else if (typeof password != "string") {
-      res.status(400).send("password must be a string");
+    } else if (
+      typeof username !== "string" ||
+      typeof password != "string" ||
+      typeof email !== "string" ||
+      typeof password !== "string"
+    ) {
+      res.status(400).send("inputs must be a string");
     } else {
       // check if user already exist
       // Validate if user exist in our database
@@ -81,10 +86,10 @@ app.post("/login", async (req, res) => {
     // validate
     if (!email && !password) {
       res.status(400).send("all fields are required");
+    } else if (typeof password !== "string" || typeof email !== "string") {
+      res.status(400).send("inputs must be a string");
     } else if (!email.includes("@")) {
       res.status(400).send("invalid email");
-    } else if (typeof password != "string") {
-      res.status(400).send("password must be a string");
     } else {
       //   check if user exists
       const user = await User.findOne({ email: email.toLowerCase() });
