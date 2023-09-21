@@ -6,14 +6,16 @@ const verifyToken = (req, res, next) => {
     req.body.token || req.query.token || req.headers["x-access-token"];
   // validate token
   if (!token) {
-    res.status(403).send("A token is required for Authentication");
+    res.status(403).json({ error: "A token is required for Authentication" });
   } else {
     try {
       const decodedToken = jwt.verify(token, JWT_SECRET);
       req.user = decodedToken;
       return next();
     } catch (error) {
-      res.status(401).send("Invalid token supplied, login to get a new token");
+      res
+        .status(401)
+        .json({ error: "Invalid token supplied, login to get a new token" });
     }
   }
 };

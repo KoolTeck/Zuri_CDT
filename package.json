@@ -1,16 +1,24 @@
 {
   "name": "tokenized",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js",
+    "start": "node ./src/index.js",
+    "dev": "nodemon ./src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "author": "Adetunji Adebowale",
   "license": "ISC",
+  "apidoc": {
+    "name": "tokenized authentication system",
+    "version": "0.1.0",
+    "description": "api endpoints for retrieving tokens",
+    "apidoc": {
+      "title": "tokenized authentication system api",
+      "url" : "https://tokenized.cyclic.cloud/"
+    }
+  },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.3.1",
