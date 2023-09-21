@@ -83,6 +83,8 @@ app.post("/login", async (req, res) => {
       res.status(400).send("all fields are required");
     } else if (!email.includes("@")) {
       res.status(400).send("invalid email");
+    } else if (typeof password != "string") {
+      res.status(400).send("password must be a string");
     }
     //   check if user exists
     const user = await User.findOne({ email: email.toLowerCase() });
