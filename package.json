@@ -13,11 +13,8 @@
   "apidoc": {
     "name": "tokenized authentication system",
     "version": "0.1.0",
-    "description": "api endpoints for retrieving tokens",
-    "apidoc": {
-      "title": "tokenized authentication system api",
-      "url" : "https://tokenized.cyclic.cloud/"
-    }
+    "description": "api endpoints for retrieving tokens"
+   
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
