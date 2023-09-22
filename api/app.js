@@ -6,30 +6,38 @@ const express = require("express");
 
 const app = express();
 
-const swaggerJSDoc = require('swagger-jsdoc');
-const swaggerUi = require('swagger-ui-express');
+const swaggerJSDoc = require("swagger-jsdoc");
+const swaggerUi = require("swagger-ui-express");
 
 const swaggerDefinition = {
-    openapi: '3.0.0',
-    info: {
-	title: 'Express Token Auth. System',
-	version: '1.0.0',
-	description:
-	'This is a REST API application made with Express. It uses jsonwebtoken to sign token for user endopoints.'
+  openapi: "3.0.0",
+  info: {
+    title: "Express Token Auth. System",
+    version: "1.0.0",
+    description:
+      "This is a REST API application made with Express. It uses jsonwebtoken to sign token for user to access some  endopoints.",
+    contact: {
+      name: "Jsonwebtoken",
+      url: "https://jwt.io/",
     },
-    servers: [
-	{
-	    url: 'http://localhost:4000',
-	    description: 'Development server',
-	}
+  },
+  servers: [
+    {
+      url: "http://localhost:4000",
+      description: "Development server",
+    },
 
-	]
+    {
+      url: "https://tokenized.cyclic.cloud",
+      description: "Prod server",
+    },
+  ],
 };
 
 const options = {
-    swaggerDefinition,
-    // Paths to files containing OpenAPI definitions
-    apis: ['./api/*.js'],
+  swaggerDefinition,
+  // Paths to files containing OpenAPI definitions
+  apis: ["./api/*.js"],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
@@ -43,7 +51,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.use(express.json());
 
@@ -53,55 +61,116 @@ const User = require("../models/user");
 // middleware for token authentication
 const auth = require("../middleware/auth");
 
+// swagger component for user
+/**
+ * @swagger
+ * components:
+ *   schemas:
+ *     NewUser:
+ *       type: object
+ *       properties:
+ *         username:
+ *           type: string
+ *           description: The user's username.
+ *           example: kooljoe
+ *         email:
+ *           type: string
+ *           description: The user's email.
+ *           example: kool@test.com
+ *         password:
+ *           type: string
+ *           description: The user's password
+ *           example: 1234567
+ *     User:
+ *       allOf:
+ *         - type: object
+ *           properties:
+ *             token:
+ *               type: string
+ *               description: New token assigned to user
+ *               example: evv1234sxs3567cr4fgr3/3=vdded334efer3...
+ *         - $ref: '#/components/schemas/NewUser'
+ */
+
+// swagger component for errors
+/**
+ * @swagger
+ * components:
+ *   responses:
+ *     NotFound:
+ *       description: The specified resource was not found
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Error'
+ *     Unauthorized:
+ *       description: Unauthorized
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Error'
+ *   schemas:
+ *    # Schema for error response body
+ *     Error:
+ *       type: object
+ *       properties:
+ *         error:
+ *           type: string
+ */
+
+/**
+ * @swagger
+ * /home:
+ *   get:
+ *     summary: home page
+ *     description: directs the user to signin or lsignup to retrieve token
+ *     responses:
+ *       200:
+ *         description: the homepage
+ *         content:
+ *           text:
+ *             example: hello there login or signup to recieve a token
+ */
+
 app.get("/home", (req, res) => {
   res.send("hello there login or signup to recieve a token");
 });
 
 /**
- * @apiDefine ValueError
- *
- * @apiError InvalidValueError The value supplied by the user is invalid or empty.
- *
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 400 Bad request
- *     {
- *        errror: "all fields are required"
- *     }
- *
- *     {
- *        error: "invalid email"
- *     }
- *
- *     {
- *        error: "user already exist, kindly login"
- *      }
+ * @swagger
+ * /signup:
+ *   post:
+ *     summary: Signs up a new user
+ *     description: recieves user details to sign them up and returns the user object with a new token
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/NewUser'
+ *     responses:
+ *       201:
+ *         description: Created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
  */
 
-/**
- * @apiDefine AuthError
- *
- * @apiError tokenError The token supplied by the user in the header is either expired or invalid.
- *
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 403 Forbidden
- *        errror: "a token is required for authentication"
- *     }
- *
- *     HTTP/1.1 401 permision declined
- *
- *     {
- *        error: "Invalid token supplied, login to get a new token"
- *     }
- *
- */
-
-
+//signup logic starts
 app.post("/signup", async (req, res) => {
-  //signup logic starts
   try {
     const { username, email, password } = req.body;
     if (!username || !email || !password) {
-      res.status(400).json({ errror: "all fields are required" });
+      res.status(400).json({ error: "all fields are required" });
     } else if (username.length < 7) {
       res
         .status(400)
@@ -147,35 +216,49 @@ app.post("/signup", async (req, res) => {
   } catch (error) {
     console.error(error);
   }
-
-  //   signup logic ends
 });
+//   signup logic ends
 
 /**
- * @api {post} /signin/ Register a new user
- * @apiName Signin
- * @apiGroup User
- *
- * @apiParam {String} email email of the new user
- * @apiParam {String} password passwword of the new user
- *
- * @apiSuccess {json} json containing details of the user with a new token generated
- *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- *    {
- *      "username": "kooldev",
- *       "email": "test1@mail.com",
- *      "password": "$2a$10$UURKRFXqo6E3bwlg.wWhneh2pwOE3EoEpZi8vMCbGPqC93aGZhHeO",
- *       "_id": "650c278d894e0cd155c0ea4b",
- *       "__v": 0,
- *       "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9eyJ1c2VyX2lkIjoiNjUwYzI3OGQ4OTRlMGNkMTU1YzBlwiO
- *     }
- *
- * @apiUse ValueError
+ * @swagger
+ * /signin:
+ *   post:
+ *     summary: Signs in a  user
+ *     description: recieves user details to sign in the user and returns the user object with a new token
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 description: The user's email.
+ *                 example: kool@mail.com
+ *               password:
+ *                 type: string
+ *                 description: The user's password.
+ *                 example: 1234567
+ *     responses:
+ *       200:
+ *         description: 0k
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/User'
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
  */
+
+// sign logic starts
 app.post("/signin", async (req, res) => {
-  //login logic starts
   try {
     const { email, password } = req.body;
     // validate
@@ -207,7 +290,7 @@ app.post("/signin", async (req, res) => {
 
         res.status(200).json(user);
       } else {
-        res.status(400).json({ error: "email or password incorrect" });
+        res.status(401).json({ error: "email or password incorrect" });
       }
     }
   } catch (error) {
@@ -215,58 +298,15 @@ app.post("/signin", async (req, res) => {
   }
   //login logic ends
 });
+// signin logic ends
 
-/**
- * @api {get} /welcome/ Just a simple welcome endpoint that requires auth. token
- * @apiName Greeting
- * @apiGroup User
- *
- * @apiHeader {String} access-token Users unique access-token.
- *
- * @apiSuccess {json} json containing the greeting
- *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *        greet: "Welcome to tokenized by kooljoe 🙌"
- *     }
- *
- * @apiUse AuthError
- */
-
-// greeting
+// greeting route starts
 app.get("/welcome", auth, (_req, res) => {
   res.status(200).json({ greet: "Welcome to tokenized by kooljoe 🙌" });
 });
+// greeting route ends
 
-/**
- * @api {get} /username/ Returns a user's username
- * @apiName Username
- * @apiGroup User
- *
- * @apiHeader {String} access-token Users unique access-token.
- *
- * @apiSuccess {json} json containing the greeting
- *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- *     {
- *        greet: "Your username is kooljoe"
- *     }
- *
- * @apiUse AuthError
- *
- * @apiError UserNotFoundError the username was not in the database
- *
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 400 Bad request
- *     {
- *        errror: "User does not exist"
- *     }
- *
- */
-
-// get username using auth
+// get username using auth starts
 app.get("/username", auth, async (req, res) => {
   const { user_id } = req.user;
   try {
@@ -282,35 +322,7 @@ app.get("/username", auth, async (req, res) => {
     };
   }
 });
-
-/**
- * @api {get} /set_username/ Changes a user's username
- * @apiName SetUsername
- * @apiGroup User
- *
- * @apiHeader {String} access-token Users unique access-token.
- *
- * @apiSuccess {json} json containing the status
- *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 201 created
- *     {
- *        change: "Your username changed successfully from Jothn to Doe 👍"
- *     }
- *
- * @apiUse AuthError
- *
- * @apiUse ValueError
- *
- * @apiError UserNotFoundError the username was not in the database
- *
- * @apiErrorExample Error-Response:
- *     HTTP/1.1 400 Bad request
- *     {
- *        errror: "user not found"
- *     }
- *
- */
+// get username using auth starts
 
 // change username using auth
 app.post("/set_username", auth, async (req, res) => {
@@ -341,20 +353,7 @@ app.post("/set_username", auth, async (req, res) => {
   }
 });
 
-/**
- * @api {get} /delete_user/ Deletes a user's data
- * @apiName DeleteUser
- * @apiGroup User
- * @apiSampleRequest https://tokenized.cyclic.cloud/delete_user
- * @apiHeader {String} access-token Users unique access-token.
- * @apiSuccess {json}  containing the delete status
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 201 created
- *     {
- *        change: "Your username changed successfully from John to Doe 👍"
- *     }
- * @apiUse AuthError
- */
+// delete user using auth starts
 app.delete("/delete_user", auth, async (req, res) => {
   const email = req.user.email;
   try {
@@ -369,5 +368,5 @@ app.delete("/delete_user", auth, async (req, res) => {
     };
   }
 });
+// delete user using auth ends
 module.exports = app;
-
