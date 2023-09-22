@@ -6,6 +6,34 @@ const express = require("express");
 
 const app = express();
 
+const swaggerJSDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+
+const swaggerDefinition = {
+    openapi: '3.0.0',
+    info: {
+	title: 'Express Token Auth. System',
+	version: '1.0.0',
+	description:
+	'This is a REST API application made with Express. It uses jsonwebtoken to sign token for user endopoints.'
+    },
+    servers: [
+	{
+	    url: 'http://localhost:4000',
+	    description: 'Development server',
+	}
+
+	]
+};
+
+const options = {
+    swaggerDefinition,
+    // Paths to files containing OpenAPI definitions
+    apis: ['./api/*.js'],
+};
+
+const swaggerSpec = swaggerJSDoc(options);
+
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
@@ -15,6 +43,8 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 app.use(express.json());
 
 // importing the user schema
@@ -23,18 +53,7 @@ const User = require("../models/user");
 // middleware for token authentication
 const auth = require("../middleware/auth");
 
-/**
- * @api {get} / Entry point
- *
- *
- * @apiSuccess {String} direction to log in or sign up
- *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 200 OK
- *     hello there login or signup to recieve a token
- *
- */
-app.get("/", (req, res) => {
+app.get("/home", (req, res) => {
   res.send("hello there login or signup to recieve a token");
 });
 
@@ -76,30 +95,6 @@ app.get("/", (req, res) => {
  *
  */
 
-/**
- * @api {post} /signup/ Register a new user
- * @apiName Signup
- * @apiGroup User
- *
- * @apiParam {String} username username of the new user
- * @apiParam {String} email email of the new user
- * @apiParam {String} password passwword of the new user
- *
- * @apiSuccess {json} json containing details of the new user created with a token generated
- *
- * @apiSuccessExample Success-Response:
- *     HTTP/1.1 201 created
- *    {
- *      "username": "kooldev",
- *       "email": "test1@mail.com",
- *      "password": "$2a$10$UURKRFXqo6E3bwlg.wWhneh2pwOE3EoEpZi8vMCbGPqC93aGZhHeO",
- *       "_id": "650c278d894e0cd155c0ea4b",
- *       "__v": 0,
- *       "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9eyJ1c2VyX2lkIjoiNjUwYzI3OGQ4OTRlMGNkMTU1YzBlwiO
- *     }
- *
- *  @apiUse ValueError
- */
 
 app.post("/signup", async (req, res) => {
   //signup logic starts
@@ -375,3 +370,4 @@ app.delete("/delete_user", auth, async (req, res) => {
   }
 });
 module.exports = app;
+
