@@ -15,7 +15,7 @@ const swaggerDefinition = {
     title: "Express Token Auth. System",
     version: "1.0.0",
     description:
-      "This is a REST API application made with Express. It uses jsonwebtoken to sign token for user to access some  endpoints.",
+      "This is a REST API application made with Express. It uses jsonwebtoken to sign token for user to access some  endpoints. Copy token response from login or sigin to access endpoints",
     contact: {
       name: "Jsonwebtoken",
       url: "https://jwt.io/",
@@ -86,11 +86,11 @@ const auth = require("../middleware/auth");
  *       allOf:
  *         - type: object
  *           properties:
+ *         - $ref: '#/components/schemas/NewUser'
  *             token:
  *               type: string
  *               description: New token assigned to user
  *               example: evv1234sxs3567cr4fgr3/3=vdded334efer3...
- *         - $ref: '#/components/schemas/NewUser'
  */
 
 // swagger component for errors
@@ -220,7 +220,9 @@ app.post("/signup", async (req, res) => {
       newUser.tokenExpiresIn = token.expiresIn;
 
       // return the new user
-      res.status(201).json(newUser);
+      if (await newUser.save()) {
+        res.status(201).json(newUser);
+      }
     }
   } catch (error) {
     console.error(error);
