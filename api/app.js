@@ -1,8 +1,8 @@
 require("dotenv").config();
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-
 const express = require("express");
+var cors = require("cors");
 
 const app = express();
 
@@ -15,7 +15,7 @@ const swaggerDefinition = {
     title: "Express Token Auth. System",
     version: "1.0.0",
     description:
-      "This is a REST API application made with Express. It uses jsonwebtoken to sign token for user to access some  endopoints.",
+      "This is a REST API application made with Express. It uses jsonwebtoken to sign token for user to access some  endpoints.",
     contact: {
       name: "Jsonwebtoken",
       url: "https://jwt.io/",
@@ -28,7 +28,7 @@ const swaggerDefinition = {
     },
 
     {
-      url: "https://tokenized.cyclic.cloud",
+      url: "https://tokenized.onrender.com/",
       description: "Prod server",
     },
   ],
@@ -50,6 +50,8 @@ app.use((req, res, next) => {
   );
   next();
 });
+
+app.use(cors());
 
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
@@ -116,7 +118,14 @@ const auth = require("../middleware/auth");
  *       properties:
  *         error:
  *           type: string
+ *     required:
+ *       - error
  */
+
+// redirect to home
+app.get("/", (req, res) => {
+  res.redirect("/home");
+});
 
 /**
  * @swagger
@@ -209,6 +218,7 @@ app.post("/signup", async (req, res) => {
       );
       // save token to db
       newUser.token = token;
+      newUser.tokenExpiresIn = token.expiresIn;
 
       // return the new user
       res.status(201).json(newUser);
@@ -300,11 +310,81 @@ app.post("/signin", async (req, res) => {
 });
 // signin logic ends
 
+/**
+ * @swagger
+ * /welcome:
+ *   get:
+ *     summary: A simple welcome
+ *     description: welcomes the user after they might have sign in with  token
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         type: string
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: 0k
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 greet:
+ *                   type: string
+ *                   description: welcome response
+ *                   example: Welcome to tokenized by kooljoe 🙌...
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ *       403:
+ *         $ref: '#/components/responses/Unauthorized'
+ */
+
 // greeting route starts
 app.get("/welcome", auth, (_req, res) => {
-  res.status(200).json({ greet: "Welcome to tokenized by kooljoe 🙌" });
+  res
+    .status(200)
+    .json({ greet: "Welcome to tokenized by kooljoe 🙌, token is valid" });
 });
 // greeting route ends
+
+/**
+ * @swagger
+ * /username:
+ *   get:
+ *     summary: Returns the user's username
+ *     description: makes as request for the user's username sent with a request header
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         type: string
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: 0k
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 username:
+ *                   type: string
+ *                   description: the requested username
+ *                   example: Your username is kooljoe
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ */
 
 // get username using auth starts
 app.get("/username", auth, async (req, res) => {
@@ -322,7 +402,51 @@ app.get("/username", auth, async (req, res) => {
     };
   }
 });
-// get username using auth starts
+// get username using auth ends
+
+/**
+ * @swagger
+ * /set_username:
+ *   post:
+ *     summary: Sets a new username
+ *     description: makes as request for the user's username to be changed sent with a request header
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               username:
+ *                 type: string
+ *                 description: The new username to   be set.
+ *                 example: kool@mail.com
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         type: string
+ *         required: true
+ *     responses:
+ *       201:
+ *         description: changed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 changed:
+ *                   type: string
+ *                   description: changed status
+ *                   example: Your username changed successfully from kooljoe to kooldev
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ */
 
 // change username using auth
 app.post("/set_username", auth, async (req, res) => {
@@ -353,6 +477,39 @@ app.post("/set_username", auth, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /delete_user:
+ *   delete:
+ *     summary: Deletes a user
+ *     description: makes as request for the user's profile to be deleted sent with a request header
+ *     parameters:
+ *       - in: header
+ *         name: x-access-token
+ *         type: string
+ *         required: true
+ *     responses:
+ *       201:
+ *         description: changed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 changed:
+ *                   type: string
+ *                   description: changed status
+ *                   example: User profile removed succesfully 👌
+ *       400:
+ *         description: Bad request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         $ref: '#/components/responses/Unauthorized'
+ */
+
 // delete user using auth starts
 app.delete("/delete_user", auth, async (req, res) => {
   const email = req.user.email;
@@ -360,7 +517,7 @@ app.delete("/delete_user", auth, async (req, res) => {
     const user = await User.deleteOne({ email: email });
 
     if (user.acknowledged) {
-      res.status(201).send(`User profile removed succesfully 👌`);
+      res.status(201).json({ changed: `User profile removed succesfully 👌` });
     }
   } catch {
     (err) => {
