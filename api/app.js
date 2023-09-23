@@ -246,7 +246,7 @@ app.post("/signup", async (req, res) => {
  *               email:
  *                 type: string
  *                 description: The user's email.
- *                 example: kool@mail.com
+ *                 example: kool@test.com
  *               password:
  *                 type: string
  *                 description: The user's password.
