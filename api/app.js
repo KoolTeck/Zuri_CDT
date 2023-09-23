@@ -23,13 +23,12 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: "http://localhost:4000",
-      description: "Development server",
-    },
-
-    {
       url: "https://tokenized.onrender.com/",
       description: "Prod server",
+    },
+    {
+      url: "http://localhost:4000",
+      description: "Development server",
     },
   ],
 };
