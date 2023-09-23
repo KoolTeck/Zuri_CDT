@@ -86,11 +86,11 @@ const auth = require("../middleware/auth");
  *       allOf:
  *         - type: object
  *           properties:
- *         - $ref: '#/components/schemas/NewUser'
  *             token:
  *               type: string
  *               description: New token assigned to user
  *               example: evv1234sxs3567cr4fgr3/3=vdded334efer3...
+ *         - $ref: '#/components/schemas/NewUser'
  */
 
 // swagger component for errors
